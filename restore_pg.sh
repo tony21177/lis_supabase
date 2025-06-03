@@ -1,5 +1,9 @@
 #!/bin/bash
 
+
+# psql -h 127.0.0.1 -p 5434 -U postgres -d postgres
+
+
 set -e  # 一旦有錯誤就中止腳本
 
 PGHOST=127.0.0.1
