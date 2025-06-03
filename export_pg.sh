@@ -1,3 +1,4 @@
+#!/bin/bash
 # 設定密碼為環境變數
 export PGPASSWORD='SX5FBqgJiqv992FQ'
 
