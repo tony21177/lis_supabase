@@ -3,7 +3,7 @@
 set -e  # 一旦有錯誤就中止腳本
 
 PGHOST=127.0.0.1
-PGPORT=5432
+PGPORT=5433
 PGUSER=postgres
 PGDATABASE=postgres
 BACKUP_FILE="backup.dump"
