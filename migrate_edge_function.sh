@@ -37,11 +37,12 @@ for fn in $FUNCTION_NAMES; do
   rm -rf "functions/$fn"
 
   supabase functions download "$fn" \
-    --project-ref "$ONLINE_PROJECT_REF" || {
-      echo "❌ 匯出失敗: $fn"
-      exit 1
-    }
+  --project-ref "$ONLINE_PROJECT_REF" \
+  --workdir . || {
+    echo "❌ 匯出失敗: $fn"
+    exit 1
+  }
 
-  # 移動下載後的函數到 export_functions/functions/
-  mv "functions/$fn" "$EXPORT_DIR/functions/$fn"
+  # 然後搬移
+  mv ".supabase/functions/$fn" "$EXPORT_DIR/functions/$fn"
 done
