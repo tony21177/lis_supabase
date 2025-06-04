@@ -32,14 +32,16 @@ echo "== 匯出線上 Edge Functions 到 $EXPORT_DIR/functions =="
 
 for fn in $FUNCTION_NAMES; do
   echo "📦 匯出函數: $fn"
+
+  # 先刪除 functions/$fn 資料夾，避免匯出錯誤
+  rm -rf "functions/$fn"
+
   supabase functions download "$fn" \
-    --project-ref "$ONLINE_PROJECT_REF" \
-    --overwrite \
-    --no-verify-jwt || {
+    --project-ref "$ONLINE_PROJECT_REF" || {
       echo "❌ 匯出失敗: $fn"
       exit 1
     }
 
-  # 移動下載的 function 到 export_functions
+  # 移動下載後的函數到 export_functions/functions/
   mv "functions/$fn" "$EXPORT_DIR/functions/$fn"
 done
