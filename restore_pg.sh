@@ -3,12 +3,16 @@
 
 # psql -h 127.0.0.1 -p 5434 -U postgres -d postgres
 
+# 以superuser身份連接到本地 PostgreSQL 資料庫
+# psql -h 127.0.0.1 -p 5434 -U supabase_admin -d postgres
+
 
 set -e  # 一旦有錯誤就中止腳本
 
 PGHOST=127.0.0.1
 PGPORT=5434
-PGUSER=postgres
+# PGUSER=postgres
+PGUSER=supabase_admin
 PGDATABASE=postgres
 BACKUP_FILE="backup.dump"
 
