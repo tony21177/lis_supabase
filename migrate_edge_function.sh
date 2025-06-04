@@ -19,33 +19,21 @@ SELF_HOST_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJ
 EXPORT_DIR="supabase_export/functions"
 mkdir -p "$EXPORT_DIR"
 
-# === 匯出線上 Edge Functions ===
-echo "== 登入並連結線上 Supabase 專案 =="
-supabase link --project-ref "$ONLINE_PROJECT_REF"
-if ! supabase functions list --project-ref "$ONLINE_PROJECT_REF" > /dev/null 2>&1; then
-  echo "❌ 無法從線上 Supabase 取得函數，請確認登入與權限"
-  exit 1
-fi
-
-echo "== 匯出 Edge Functions =="
-supabase functions list --project-ref "$ONLINE_PROJECT_REF" | tail -n +2 | awk '{print $1}' | while read -r function_name; do
+echo "== 匯出線上 Edge Functions =="
+supabase functions list --project-ref "$ONLINE_PROJECT_REF" | tail -n +3 | awk -F '|' '{gsub(/ /, "", $3); print $3}' | while read -r function_name; do
   echo "📦 匯出函數: $function_name"
-  mkdir -p "$EXPORT_DIR/$function_name"
-  supabase functions download "$function_name" --project-ref "$ONLINE_PROJECT_REF" --legacy-bundle --workdir "$EXPORT_DIR/$function_name"
+  mkdir -p "functions/$function_name"
+  supabase functions download "$function_name" --project-ref "$ONLINE_PROJECT_REF" --legacy-bundle --target "functions/$function_name"
 done
 
-# === 切換連結至 Self-host Supabase ===
-echo "== 切換連線到 Self-host Supabase =="
+echo "== 連結到 Self-host Supabase =="
 supabase link --project-ref local --project-url "$SELF_HOST_SUPABASE_URL" --anon-key "$SELF_HOST_ANON_KEY"
 
-# === 部署 Edge Functions ===
 echo "== 部署 Edge Functions 到 Self-host Supabase =="
-for fn_dir in "$EXPORT_DIR"/*; do
+for fn_dir in functions/*; do
   fn_name=$(basename "$fn_dir")
   echo "🚀 部署函數: $fn_name"
-  supabase functions deploy "$fn_name" --project-ref local --workdir "$fn_dir"
+  supabase functions deploy "$fn_name" --no-verify-jwt
 done
 
 echo "✅ 所有函數已成功遷移完成！"
-
-# 備註：請確認 self-host 環境已啟動 supabase local instance (supabase start)
