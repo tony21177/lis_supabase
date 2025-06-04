@@ -1,5 +1,4 @@
 # 忽略 pg_logical snapshots 裡的所有檔案
-volumes/
 export_functions/
 node_modules/
 
