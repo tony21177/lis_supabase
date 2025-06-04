@@ -20,16 +20,25 @@ EXPORT_DIR="supabase_export/functions"
 mkdir -p "$EXPORT_DIR"
 
 echo "== 匯出線上 Edge Functions =="
-supabase functions list --project-ref "$ONLINE_PROJECT_REF" | tail -n +3 | awk -F '|' '{gsub(/ /, "", $3); print $3}' | while read -r function_name; do
-  echo "📦 匯出函數: $function_name"
-  mkdir -p "functions/$function_name"
-  supabase functions download "$function_name" --project-ref "$ONLINE_PROJECT_REF" --legacy-bundle --target "functions/$function_name"
+
+supabase functions list --project-ref "$ONLINE_PROJECT_REF" | tail -n +3 | while read -r line; do
+  # 提取 slug 欄位（去除前後空格）
+  slug=$(echo "$line" | awk -F '|' '{print $3}' | xargs)
+
+  # 略過空行或標頭
+  if [[ -z "$slug" || "$slug" == "SLUG" || "$slug" == "-----------------------------" ]]; then
+    continue
+  fi
+
+  echo "📦 匯出函數: $slug"
+  mkdir -p "functions/$slug"
+  supabase functions download "$slug" --project-ref "$ONLINE_PROJECT_REF"
 done
 
 echo "== 連結到 Self-host Supabase =="
-supabase link --project-ref local --project-url "$SELF_HOST_SUPABASE_URL" --anon-key "$SELF_HOST_ANON_KEY"
+supabase link --project-ref local --project-url "$SELF_HOST_PROJECT_URL" --anon-key "$SELF_HOST_ANON_KEY"
 
-echo "== 部署 Edge Functions 到 Self-host Supabase =="
+echo "== 部署到 Self-host Supabase =="
 for fn_dir in functions/*; do
   fn_name=$(basename "$fn_dir")
   echo "🚀 部署函數: $fn_name"
