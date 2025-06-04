@@ -31,7 +31,7 @@ for fn in $FUNCTION_NAMES; do
   echo "📦 匯出函數: $fn"
   supabase functions download "$fn" \
     --project-ref "$ONLINE_PROJECT_REF" \
-    --legacy-bundle || {
+ || {
       echo "❌ 匯出失敗: $fn"
       exit 1
     }
