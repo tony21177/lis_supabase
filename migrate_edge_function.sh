@@ -33,16 +33,23 @@ echo "== 匯出線上 Edge Functions 到 $EXPORT_DIR/functions =="
 for fn in $FUNCTION_NAMES; do
   echo "📦 匯出函數: $fn"
 
-  # 先刪除 functions/$fn 資料夾，避免匯出錯誤
-  rm -rf "functions/$fn"
+  # 清除之前殘留
+  rm -rf ".supabase/functions/$fn"
 
+  # 匯出函數
   supabase functions download "$fn" \
-  --project-ref "$ONLINE_PROJECT_REF" \
-  --workdir . || {
-    echo "❌ 匯出失敗: $fn"
-    exit 1
-  }
+    --project-ref "$ONLINE_PROJECT_REF" \
+    --workdir . || {
+      echo "❌ 匯出失敗: $fn"
+      exit 1
+    }
 
-  # 然後搬移
-  mv ".supabase/functions/$fn" "$EXPORT_DIR/functions/$fn"
+  # 搬移到 export_functions
+  if [ -d ".supabase/functions/$fn" ]; then
+    mkdir -p "$EXPORT_DIR/functions"
+    mv ".supabase/functions/$fn" "$EXPORT_DIR/functions/$fn"
+  else
+    echo "⚠️ 找不到 .supabase/functions/$fn，可能 CLI 沒有正確下載"
+    exit 1
+  fi
 done
