@@ -15,13 +15,12 @@ BACKUP_FILE="backup.dump"
 # 確保你已經設定了 PGPASSWORD 環境變數，或在還原時會提示輸入密碼
 export PGPASSWORD=your-super-secret-and-long-postgres-password
 
-
-
-pg_restore --clean \
-           --no-owner \
-           --host db.newproject.supabase.co \
-           --username postgres.newprojectid \
-           --dbname postgres \
-           --port 5432 \
-           --verbose \
-           supabase_backup.dump
+pg_restore \
+  --clean \
+  --no-owner \
+  --host=$PGHOST \
+  --port=$PGPORT \
+  --username=$PGUSER \
+  --dbname=$PGDATABASE \
+  --verbose \
+  "$BACKUP_FILE"
