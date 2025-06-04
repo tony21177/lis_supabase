@@ -16,9 +16,21 @@ BACKUP_FILE="backup.dump"
 export PGPASSWORD=your-super-secret-and-long-postgres-password
 
 pg_restore \
+  --clean \
+  --no-owner \
   --host=$PGHOST \
   --port=$PGPORT \
   --username=$PGUSER \
   --dbname=$PGDATABASE \
   --verbose \
   "$BACKUP_FILE"
+
+
+pg_restore --clean \
+           --no-owner \
+           --host db.newproject.supabase.co \
+           --username postgres.newprojectid \
+           --dbname postgres \
+           --port 5432 \
+           --verbose \
+           supabase_backup.dump
